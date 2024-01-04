@@ -27,10 +27,10 @@ namespace Tetris
           case ConsoleKey.LeftArrow:
             Game.field.MoveFigureLeft();
             break;
-          case ConsoleKey.R:
+          case ConsoleKey.UpArrow:
             Game.field.ReverseFigure();
             break;
-          case ConsoleKey.Q:
+          case ConsoleKey.DownArrow:
             Game.SleepTime = Game.SpeedUpSleepTime;
             break;
         }

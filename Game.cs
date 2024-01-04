@@ -22,6 +22,7 @@ namespace Tetris
       Thread keyController = new(Control.KeyController); 
       gameLoop.Start();
       keyController.Start();
+      
     }
 
     public static void GameLoop()

@@ -1,5 +1,4 @@
 using System;
-
 namespace Tetris
 {
   public readonly struct InitCoords
@@ -58,6 +57,9 @@ namespace Tetris
   {
     public int[,] Coords = new int[4, 2];
 
+    private int _figureType;
+    private int _reverses;
+
     private static readonly Random rnd = new();
     public Figure()
     {
@@ -66,41 +68,20 @@ namespace Tetris
 
     public void Recreate()
     {
-      int figure = rnd.Next(7);
-      int[,] initFigure;
-      switch (figure)
+      _figureType = rnd.Next(7);
+      _reverses = 0;
+      int[,] initFigure = _figureType switch
       {
-        case 0:
-          initFigure = InitCoords.Line;
-          break;
-        case 1:
-          initFigure = InitCoords.Cube;
-          break;
-        case 2:
-          initFigure = InitCoords.L;
-          break;
-        case 3:
-          initFigure = InitCoords.ReversedL;
-          break;
-        case 4:
-          initFigure = InitCoords.Four;
-          break;
-        case 5:
-          initFigure = InitCoords.ReversedFour;
-          break;
-        case 6:
-          initFigure = InitCoords.T;
-          break;
-        default:
-          initFigure = InitCoords.Line;
-          break;
-      }
+        0 => InitCoords.Line,
+        1 => InitCoords.Cube,
+        2 => InitCoords.L,
+        3 => InitCoords.ReversedL,
+        4 => InitCoords.Four,
+        5 => InitCoords.ReversedFour,
+        6 => InitCoords.T,
+        _ => InitCoords.Line,
+      };
       Array.Copy(initFigure, Coords, 8);
-    }
-
-    public int GetMinY()
-    {
-      return Coords[0, 0];
     }
 
     public List<int[]> GetDownParts()
@@ -143,7 +124,7 @@ namespace Tetris
       for (int i = Coords.GetLength(0) - 1; i >= 0; i--)
       {
         if (Coords[i, 0] < 0) continue;
-        
+
         if (leftParts.Count == 0 || currentY != Coords[i, 0])
         {
           leftParts.Add(new int[2] { Coords[i, 0], Coords[i, 1] });
@@ -151,6 +132,179 @@ namespace Tetris
         }
       }
       return leftParts;
+    }
+
+    public int[,] GetReversedCoords()
+    {
+      int[,] newCoords;
+      int y, x;
+      switch (_figureType)
+      {
+        case 0:
+          if (_reverses == 1)
+          {
+            y = Coords[2, 0] - 1;
+            x = Coords[2, 1];
+            newCoords = new int[4, 2] { { y + 3, x }, { y + 2, x }, { y + 1, x }, { y, x } };
+            _reverses = 0;
+          }
+          else
+          {
+            y = Coords[2, 0];
+            x = Coords[2, 1] - 1;
+            newCoords = new int[4, 2] { { y, x + 3 }, { y, x + 2 }, { y, x + 1 }, { y, x } };
+            _reverses = 1;
+          }
+          break;
+        case 1:
+          newCoords = Coords;
+          break;
+        case 2:
+          switch (_reverses)
+          {
+            case 0:
+              y = Coords[2, 0];
+              x = Coords[2, 1] - 1;
+              newCoords = new int[4, 2] { { y + 1, x }, { y, x + 2 }, { y, x + 1 }, { y, x } };
+              break;
+            case 1:
+              y = Coords[2, 0] - 1;
+              x = Coords[2, 1];
+              newCoords = new int[4, 2] { { y + 2, x }, { y + 1, x }, { y, x }, { y, x - 1 } };
+              break;
+            case 2:
+              y = Coords[1, 0] - 1;
+              x = Coords[1, 1] - 1;
+              newCoords = new int[4, 2] { { y + 1, x + 2 }, { y + 1, x + 1 }, { y + 1, x }, { y, x + 2 } };
+              break;
+            case 3:
+              y = Coords[1, 0] - 1;
+              x = Coords[1, 1];
+              newCoords = new int[4, 2] { { y + 2, x + 1 }, { y + 2, x }, { y + 1, x }, { y, x } };
+              break;
+            default:
+              y = Coords[2, 0];
+              x = Coords[2, 1] - 1;
+              newCoords = new int[4, 2] { { y + 1, x }, { y, x + 2 }, { y, x + 1 }, { y, x } };
+              break;
+          }
+          if (_reverses == 3) _reverses = 0;
+          else _reverses++;
+          break;
+        case 3:
+          switch (_reverses)
+          {
+            case 0:
+              y = Coords[2, 0] - 1;
+              x = Coords[2, 1] - 1;
+              newCoords = new int[4, 2] { { y + 1, x + 2 }, { y + 1, x + 1 }, { y + 1, x }, { y, x } };
+              break;
+            case 1:
+              y = Coords[1, 0] - 1;
+              x = Coords[1, 1] - 1;
+              newCoords = new int[4, 2] { { y + 2, x }, { y + 1, x }, { y, x + 1 }, { y, x } };
+              break;
+            case 2:
+              y = Coords[1, 0];
+              x = Coords[1, 1] - 1;
+              newCoords = new int[4, 2] { { y + 1, x + 2 }, { y, x + 2 }, { y, x + 1 }, { y, x } };
+              break;
+            case 3:
+              y = Coords[1, 0] - 1;
+              x = Coords[1, 1] - 1;
+              newCoords = new int[4, 2] { { y + 2, x }, { y + 2, x + 1 }, { y + 1, x + 1 }, { y, x + 1 } };
+              break;
+            default:
+              y = Coords[2, 0] - 1;
+              x = Coords[2, 1] - 1;
+              newCoords = new int[4, 2] { { y + 1, x + 2 }, { y + 1, x + 1 }, { y + 1, x }, { y, x } };
+              break;
+          }
+          if (_reverses == 3) _reverses = 0;
+          else _reverses++;
+          break;
+        case 4:
+          if (_reverses == 0)
+          {
+            y = Coords[2, 0] - 1;
+            x = Coords[2, 1];
+            newCoords = new int[4, 2] { { y + 2, x + 1 }, { y + 1, x + 1 }, { y + 1, x }, { y, x } };
+            _reverses = 1;
+          }
+          else
+          {
+            y = Coords[2, 0];
+            x = Coords[2, 1] - 2;
+            newCoords = new int[4, 2] { { y + 1, x + 1 }, { y + 1, x }, { y, x + 2 }, { y, x + 1 } };
+            _reverses = 0;
+          }
+          break;
+        case 5:
+          if (_reverses == 0)
+          {
+            y = Coords[3, 0] - 1;
+            x = Coords[3, 1];
+            newCoords = new int[4, 2] { { y + 2, x }, { y + 1, x + 1 }, { y + 1, x }, { y, x + 1 } };
+            _reverses = 1;
+          }
+          else
+          {
+            y = Coords[2, 0];
+            x = Coords[2, 1];
+            newCoords = new int[4, 2] { { y + 1, x + 2 }, { y + 1, x + 1 }, { y, x + 1 }, { y, x } };
+            _reverses = 0;
+          }
+          break;
+        case 6:
+          switch (_reverses)
+          {
+            case 0:
+              y = Coords[3, 0] - 1;
+              x = Coords[3, 1];
+              newCoords = new int[4, 2] { { y + 2, x + 1 }, { y + 1, x + 1 }, { y + 1, x }, { y, x + 1 } };
+              break;
+            case 1:
+              y = Coords[3, 0];
+              x = Coords[3, 1] - 1;
+              newCoords = new int[4, 2] { { y + 1, x + 2 }, { y + 1, x + 1 }, { y + 1, x }, { y, x + 1 } };
+              break;
+            case 2:
+              y = Coords[3, 0];
+              x = Coords[3, 1] - 1;
+              newCoords = new int[4, 2] { { y + 2, x + 1 }, { y + 1, x + 2 }, { y + 1, x + 1 }, { y, x + 1 } };
+              break;
+            case 3:
+              y = Coords[3, 0];
+              x = Coords[3, 1] - 1;
+              newCoords = new int[4, 2] { { y + 2, x + 1 }, { y + 1, x + 2 }, { y + 1, x + 1 }, { y + 1, x } };
+              break;
+            default:
+              y = Coords[3, 0] - 1;
+              x = Coords[3, 1];
+              newCoords = new int[4, 2] { { y + 2, x + 1 }, { y + 1, x + 1 }, { y + 1, x }, { y, x + 1 } };
+              break;
+          }
+          if (_reverses == 3) _reverses = 0;
+          else _reverses++;
+          break;
+        default:
+          if (_reverses == 1)
+          {
+            y = Coords[2, 0];
+            x = Coords[2, 1];
+            newCoords = new int[4, 2] { { y + 3, x }, { y + 2, x }, { y + 1, x }, { y, x } };
+            _reverses = 0;
+          }
+          else
+          {
+            y = Coords[2, 0];
+            x = Coords[2, 1] - 1;
+            newCoords = new int[4, 2] { { y, x + 3 }, { y, x + 2 }, { y, x + 1 }, { y, x } };
+            _reverses = 1;
+          }
+          break;
+      }
+      return newCoords;
     }
   }
 }
