@@ -14,12 +14,10 @@ namespace Tetris
           if (key == ConsoleKey.Y)
           {
             Game.pause = false;
+            Game.SleepTime = Game.InitSleepTime;
             Game.field = new(new Figure());
           }
-          else
-          {
-            Game.quit = true;
-          }
+          else Game.quit = true;
         }
         switch (key)
         {
@@ -33,7 +31,7 @@ namespace Tetris
             Game.field.ReverseFigure();
             break;
           case ConsoleKey.Q:
-            Game.SpeedUp();
+            Game.SleepTime = Game.SpeedUpSleepTime;
             break;
         }
       }

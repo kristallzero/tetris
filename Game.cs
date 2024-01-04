@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 
 namespace Tetris
 {
@@ -10,6 +8,10 @@ namespace Tetris
     public static readonly int MatrixY = 20;
     public static readonly char Void = '□';
     public static readonly char Fill = '■';
+    public static readonly int InitSleepTime = 500;
+    public static readonly int SpeedUpSleepTime = 25;
+
+    public static int SleepTime = InitSleepTime;
     public static bool quit = false;
     public static bool pause = false;
 
@@ -28,7 +30,7 @@ namespace Tetris
       {
         if (pause) continue;
         Visual.Print(field);
-        Thread.Sleep(100);
+        Thread.Sleep(SleepTime);
 
         if (!field.Update())
         {
@@ -36,11 +38,6 @@ namespace Tetris
           Console.Write("Вы проиграли! Начать сначало? (y): ");
         };
       }
-    }
-
-    public static void SpeedUp()
-    {
-
     }
   }
 }

@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.InteropServices;
 
 namespace Tetris
 {
@@ -19,25 +18,14 @@ namespace Tetris
     {
       if (!CanMoveDown())
       {
+        Game.SleepTime = Game.InitSleepTime;
         _figure.Recreate();
         return CanSpawn();
-      }
-      if (_figure.GetMinY() == _matrix.GetLength(0) - 1)
-      {
-        _figure.Recreate();
-        return true;
       }
       for (int i = 0; i < _figure.Coords.GetLength(0); i++)
       {
         if (_figure.Coords[i, 0] >= 0)
-        {
-          if (_matrix[_figure.Coords[i, 0] + 1, _figure.Coords[i, 1]])
-          {
-            _figure.Recreate();
-            return CanSpawn();
-          }
           _matrix[_figure.Coords[i, 0], _figure.Coords[i, 1]] = false;
-        }
         _figure.Coords[i, 0]++;
         if (_figure.Coords[i, 0] >= 0)
           _matrix[_figure.Coords[i, 0], _figure.Coords[i, 1]] = true;
