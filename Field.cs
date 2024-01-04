@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Runtime.ExceptionServices;
 
 namespace Tetris
 {
@@ -31,6 +32,29 @@ namespace Tetris
         if (_figure.Coords[i, 0] >= 0)
           _matrix[_figure.Coords[i, 0], _figure.Coords[i, 1]] = true;
       }
+      DeleteFilledLines();
+      return true;
+    }
+
+    private void DeleteFilledLines()
+    {
+      for (int i = _matrix.GetLength(0) - 1; i >= 0; i--)
+      {
+        if (IsLineFilled(i))
+        {
+          for (int j = i; j > 0; j--)
+            for (int k = 0; k < _matrix.GetLength(1); k++)
+              _matrix[j, k] = _matrix[j - 1, k];
+          for (int j = 0; j < _matrix.GetLength(1); j++)
+            _matrix[0, j] = false;
+        }
+      }
+    }
+
+    private bool IsLineFilled(int y)
+    {
+      for (int x = 0; x < _matrix.GetLength(1); x++)
+        if (!_matrix[y, x]) return false;
       return true;
     }
     private bool CanSpawn()
