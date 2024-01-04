@@ -18,6 +18,14 @@ namespace Tetris
     public static Field field = new(new Figure());
     public static void Main()
     {
+      Console.WriteLine("Управление:");
+      Console.WriteLine("Стрелка влево (←): передвижение фигуры налево");
+      Console.WriteLine("Стрелка вправо (→): передвижение фигуры направо");
+      Console.WriteLine("Стрелка вверх (↑): поворот фигуры");
+      Console.WriteLine("Стрелка вниз (↓): ускорение падения фигуры");
+      Console.WriteLine("Для начала игры нажмите любую кнопку");
+      Console.ReadKey();
+      
       Thread gameLoop = new(GameLoop);
       Thread keyController = new(Control.KeyController); 
       gameLoop.Start();
