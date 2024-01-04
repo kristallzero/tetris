@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.Contracts;
+using System.Runtime.InteropServices;
 
 namespace Tetris
 {
@@ -107,12 +108,13 @@ namespace Tetris
     public List<int[]> GetDownParts()
     {
       List<int[]> downParts = new();
-      
-      for (int i = 0; i <= Coords.GetLength(0); i++)
+
+      for (int i = 0; i < Coords.GetLength(0); i++)
       {
+        if (Coords[i, 0] < -1) continue;
         int index = downParts.FindIndex(x => x[1] == Coords[i, 1]);
-        if (index == -1) downParts.Add(new int[2] {Coords[i, 0], Coords[i, 1]});
-        else if (Coords[i, 0] >= -1) downParts[index] = new int[2] {Coords[i, 0], Coords[i, 1]};
+        if (index == -1) downParts.Add(new int[2] { Coords[i, 0], Coords[i, 1] });
+        else if (downParts[index][0] < Coords[i, 0]) downParts[index] = new int[2] { Coords[i, 0], Coords[i, 1] };
       }
       return downParts;
     }
@@ -120,20 +122,37 @@ namespace Tetris
     public List<int[]> GetRightParts()
     {
       List<int[]> rightParts = new();
-      int currentY = Coords[Coords.GetLength(0) - 1, 0];
-      if (currentY < 0) currentY = 0;
-      for (int i = Coords.GetLength(0) - 1; i >= 0; i--)
+      int currentY = Coords[0, 0];
+      if (currentY < 0) return rightParts;
+      rightParts.Add(new int[2] { Coords[0, 0], Coords[0, 1] });
+      for (int i = 1; i < Coords.GetLength(0); i++)
       {
         if (Coords[i, 0] < 0) break;
         if (currentY != Coords[i, 0])
         {
-          rightParts.Add(new int[2] { Coords[i + 1, 0], Coords[i + 1, 1] });
+          rightParts.Add(new int[2] { Coords[i, 0], Coords[i, 1] });
           currentY = Coords[i, 0];
         }
       }
-      if (Coords[0, 0] >= 0) rightParts.Add(new int[2] {Coords[0, 0], Coords[0, 1]});
       return rightParts;
     }
 
+    public List<int[]> GetLeftParts()
+    {
+      List<int[]> leftParts = new();
+      int currentY = Coords[0, 0];
+      if (currentY < 0) currentY = 0;
+      for (int i = Coords.GetLength(0) - 1; i >= 0; i--)
+      {
+        if (Coords[i, 0] < 0) continue;
+        
+        if (leftParts.Count == 0 || currentY != Coords[i, 0])
+        {
+          leftParts.Add(new int[2] { Coords[i, 0], Coords[i, 1] });
+          currentY = Coords[i, 0];
+        }
+      }
+      return leftParts;
+    }
   }
 }

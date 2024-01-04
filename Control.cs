@@ -6,9 +6,21 @@ namespace Tetris
   {
     public static void KeyController()
     {
-      while (true)
+      while (!Game.quit)
       {
         ConsoleKey key = Console.ReadKey().Key;
+        if (Game.pause)
+        {
+          if (key == ConsoleKey.Y)
+          {
+            Game.pause = false;
+            Game.field = new(new Figure());
+          }
+          else
+          {
+            Game.quit = true;
+          }
+        }
         switch (key)
         {
           case ConsoleKey.RightArrow:
@@ -19,6 +31,9 @@ namespace Tetris
             break;
           case ConsoleKey.R:
             Game.field.ReverseFigure();
+            break;
+          case ConsoleKey.Q:
+            Game.SpeedUp();
             break;
         }
       }

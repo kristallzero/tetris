@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace Tetris
 {
@@ -10,6 +11,7 @@ namespace Tetris
     public static readonly char Void = '□';
     public static readonly char Fill = '■';
     public static bool quit = false;
+    public static bool pause = false;
 
     public static Field field = new(new Figure());
     public static void Main()
@@ -18,23 +20,27 @@ namespace Tetris
       Thread keyController = new(Control.KeyController); 
       gameLoop.Start();
       keyController.Start();
-      //GameLoop();
     }
 
     public static void GameLoop()
     {
-      while (true)
+      while (!quit)
       {
+        if (pause) continue;
         Visual.Print(field);
-        Thread.Sleep(500);
+        Thread.Sleep(100);
+
         if (!field.Update())
         {
+          pause = true;
           Console.Write("Вы проиграли! Начать сначало? (y): ");
-          if (Console.ReadLine() != "y") quit = true;
-          field = new(new Figure());
-          field.AddFigure();
         };
       }
+    }
+
+    public static void SpeedUp()
+    {
+
     }
   }
 }
